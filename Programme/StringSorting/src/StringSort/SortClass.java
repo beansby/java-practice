@@ -18,7 +18,7 @@ public class SortClass {
         int result;
 
         List<String> removeNull = Arrays.asList(data);
-        String[] newData = removeNull.stream().filter(t->(t!=null && t.length() > 0)).toArray(String[]::new);
+        String[] newData = removeNull.stream().filter(t->(t!=null)).toArray(String[]::new);
 
         for(int i=0; i<newData.length-1; i++){
             for(int j=i+1; j<newData.length; j++){
