@@ -13,8 +13,7 @@ public class SortClass {
     public String[] data;
 
     //NullPointerException 예외처리
-    public String[] sort(String[] data){
-        this.data = data;
+    public static String[] sort(String[] data){
         int result;
 
         List<String> removeNull = Arrays.asList(data);

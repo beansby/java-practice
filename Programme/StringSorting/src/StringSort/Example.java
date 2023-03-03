@@ -5,14 +5,17 @@ import StringSort.SortClass;
 public class Example {
     public static void main(String[] args) {
         String[] data = {"abc","bca", " a","ccc","aer", null, "age"};
-//        String[] data = {"abc","bca", "ccc","aer", null, "age"};
-//        String[] data = null;
-        SortClass sortClass = new SortClass();
 
-        String[] newData = sortClass.sort(data);
+        System.out.println("[Before]");
+        for(int i=0; i<data.length; i++){
+            System.out.print(data[i]+"\t");
+        }
+        System.out.println();
 
-        for(int i=0; i<newData.length; i++){
-            System.out.println(newData[i]);
+        System.out.println("[After]");
+        data = SortClass.sort(data);
+        for(int i=0; i<data.length; i++){
+            System.out.print(data[i]+"\t");
         }
     }
 }
