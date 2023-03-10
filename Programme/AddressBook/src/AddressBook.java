@@ -1,9 +1,14 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 
 public class AddressBook {
     List<Contact> contacts = new ArrayList<>();
     int cnt;
 
+    File file = null;
+    BufferedWriter bw = null;
 
     //사용자 입력값
     Scanner sc = new Scanner(System.in);
@@ -11,7 +16,7 @@ public class AddressBook {
     /**
      * 연락처 저장
      */
-    public void save(){
+    public void save(String filePath){
         System.out.println("[연락처 저장]");
         System.out.print("이름 : ");
         String name = sc.nextLine();
@@ -23,6 +28,19 @@ public class AddressBook {
             phone = sc.nextLine();
             System.out.print("이메일 : ");
             email = sc.nextLine();
+        }
+
+        String param = name +","+ phone +","+ email;
+
+        try {
+            file = new File(filePath);
+            bw = new BufferedWriter(new FileWriter(file, true));
+            bw.write(param);
+            bw.newLine();   //개행
+            bw.flush();
+            bw.close();
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
         contacts.add(new Contact(name, phone, email));
