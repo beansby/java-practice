@@ -112,23 +112,14 @@ public class AddressBook {
         Collections.sort(contacts);
 
         // Arraylist to csv file
-        try {
-            file = new File(filePath);
-            bw = new BufferedWriter(new FileWriter(file, false));
-
-            for(Contact contact : contacts){
-                String param = contact.getName()+","+contact.getPhone()+","+contact.getEmail();
-                bw.write(param);
-                bw.newLine();   //개행
-            }
-
-            bw.flush();
-            bw.close();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        convertCSV(filePath);
     }
 
+    /**
+     * 연락처 삭제
+     * Arraylist 수정 -> 수정된 Arraylist -> csv file save (false, 덮어쓰기)
+     * @param filePath
+     */
     public void delete(String filePath){
         int[] idx = findByName(filePath);
 
@@ -143,22 +134,7 @@ public class AddressBook {
         Collections.sort(contacts);
 
         // Arraylist to csv file
-        try {
-            file = new File(filePath);
-            bw = new BufferedWriter(new FileWriter(file, false));
-
-            for(Contact contact : contacts){
-                String param = contact.getName()+","+contact.getPhone()+","+contact.getEmail();
-                bw.write(param);
-                bw.newLine();   //개행
-            }
-
-            bw.flush();
-            bw.close();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
+        convertCSV(filePath);
         System.out.println("삭제가 완료되었습니다.");
     }
 
@@ -241,5 +217,29 @@ public class AddressBook {
         Collections.sort(contacts); //이름순 정렬
         return contacts;
     }
+
+    /**
+     * Arraylist to csv file
+     * @param filePath
+     */
+    public void convertCSV(String filePath){
+        try {
+            file = new File(filePath);
+            bw = new BufferedWriter(new FileWriter(file, false));
+
+            for(Contact contact : contacts){
+                String param = contact.getName()+","+contact.getPhone()+","+contact.getEmail();
+                bw.write(param);
+                bw.newLine();   //개행
+            }
+
+            bw.flush();
+            bw.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
