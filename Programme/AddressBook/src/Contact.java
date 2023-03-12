@@ -1,9 +1,15 @@
+import com.opencsv.bean.CsvBindByPosition;
+
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Contact implements Comparable {
     //NAME, PHONE, EMAIL
+    @CsvBindByPosition(position = 0)
     String name;
+    @CsvBindByPosition(position = 1)
     String phone;
+    @CsvBindByPosition(position = 2)
     String email;
 
     public Contact() {
@@ -83,8 +89,8 @@ public class Contact implements Comparable {
 
     @Override
     public String toString() {
-//        return "[ 이름 : " + name + "\t 전화번호 : " + phone + "\t\t 이메일 : " + email + "]";
-        return stringBuilder();
+        return "[ 이름 : " + name + "\t 전화번호 : " + phone + "\t\t 이메일 : " + email + "]";
+//        return stringBuilder();
     }
 
     public String stringBuilder() {

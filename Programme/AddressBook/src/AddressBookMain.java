@@ -14,6 +14,8 @@ public class AddressBookMain {
         AddressBook ab = new AddressBook();
         Scanner sc = new Scanner(System.in);
 
+//        ReaderTest.convertData(path);
+
         while(true){
             System.out.println("[ AddressBook ]");
             System.out.println(" 1. 연락처 저장 ");
@@ -32,19 +34,19 @@ public class AddressBookMain {
                     System.out.println();
                     break;
                 case 2:
-                    ab.update();
+                    ab.update(path);
                     System.out.println();
                     break;
                 case 3:
-                    ab.delete();
+                    ab.delete(path);
                     System.out.println();
                     break;
                 case 4:
-                    ab.findByName();
+                    ab.findByName(path);
                     System.out.println();
                     break;
                 case 5:
-                    ab.allInfo();
+                    ab.allInfo(path);
                     System.out.println();
                     break;
                 default: break;
