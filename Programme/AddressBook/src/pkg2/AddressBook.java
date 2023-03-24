@@ -2,6 +2,7 @@ package pkg2;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * 주소록(연락처 목록).
@@ -11,11 +12,14 @@ import java.util.*;
  * - delete() : 연락처 삭제
  *        -> searchBy()
  * - searchBy() : 연락처 검색
- *      -> searchByName() 이름, searchByPhone() 연락처
+ *      -> findByName() 이름, findByPhone() 연락처
  * - allInfo() : 전체 연락처 조회
  *
  * - loadFile() : file 읽어오기
  * - saveFile() : file 덮어쓰기
+ *
+ * - isPhone() : 전화번호 타입 검사
+ * - isEmail() : 이메일 타입 검사
  */
 public class AddressBook {
     private List<Contact> contacts = new ArrayList<>();
@@ -45,19 +49,31 @@ public class AddressBook {
         String name = sc.nextLine();
         String phone = null, email = null;
 
-        if(name.length() == 0){
-            throw new Exception("이름은 필수입력 항목입니다. 이름을 입력해주세요.");
-        } else {
-            System.out.print("- 전 화 번 호 : ");
-            phone = sc.nextLine();
-            if(phone.length() == 0) phone = " ";
 
-            System.out.print("- 이  메  일 : ");
-            email = sc.nextLine();
-            if(email.length() == 0) email = " ";
+        while(name.length() == 0){
+            System.out.println("이름은 필수입력 항목입니다. 이름을 입력해주세요.");
+            System.out.print("- 이      름 : ");
+            name = sc.nextLine();
         }
 
+        System.out.print("- 전 화 번 호 : ");
+        phone = sc.nextLine();
+        while(!(isPhone(phone))){
+            System.out.print("- 전 화 번 호 : ");
+            phone = sc.nextLine();
+        }
+        if(phone.length() == 0) phone = " ";
+
+        System.out.print("- 이  메  일 : ");
+        email = sc.nextLine();
+        while (!(isEmail(email))){
+            System.out.print("- 이  메  일 : ");
+            email = sc.nextLine();
+        }
+        if(email.length() == 0) email = " ";
+
         contacts.add(new Contact(name, phone, email));
+
         Collections.sort(contacts);
         saveFile();
         System.out.println("연락처가 저장되었습니다.");
@@ -94,23 +110,37 @@ public class AddressBook {
                         System.out.println("기 존 이 름 : "+contacts.get(sel).getName());
                         System.out.print("변 경 할 이 름 : ");
                         name = sc.nextLine();
+                        while(name.length() == 0){
+                            System.out.println("⚠️ 변경할 이름을 입력해주세요.");
+                            System.out.print("변 경 할 이 름 : ");
+                            name = sc.nextLine();
+                        }
                         contacts.get(sel).setName(name);
                         System.out.println(contacts.get(sel).getName()+"으로 변경이 완료되었습니다.");
-                        break MOD;
+                        break;
                     case 2:
                         System.out.println("기 존 번 호 : "+contacts.get(sel).getPhone());
                         System.out.print("변 경 할 번 호 : ");
                         phone = sc.nextLine();
+
+                        while(!(isPhone(phone))){
+                            System.out.print("변 경 할 번 호 : ");
+                            phone = sc.nextLine();
+                        }
                         contacts.get(sel).setPhone(phone);
                         System.out.println(contacts.get(sel).getPhone()+"으로 변경이 완료되었습니다.");
-                        break MOD;
+                        break;
                     case 3:
                         System.out.println("기 존 이 메 일 : "+contacts.get(sel).getEmail());
                         System.out.print("변 경 할 이 메 일 : ");
                         email = sc.nextLine();
+                        while (!(isEmail(email))){
+                            System.out.print("변 경 할 이 메 일 : ");
+                            email = sc.nextLine();
+                        }
                         contacts.get(sel).setEmail(email);
                         System.out.println(contacts.get(sel).getEmail()+"으로 변경이 완료되었습니다.");
-                        break MOD;
+                        break;
                     default:
                         System.out.println("잘못된 선택입니다. 1~3번 사이의 번호를 입력해주세요.");
                         break;
@@ -281,5 +311,27 @@ public class AddressBook {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 데이터 타입 체크
+     */
+    public boolean isPhone(String phone){
+        String numPattern = "(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})";
+        if(!(Pattern.matches(numPattern, phone))){
+            if(!(phone.length() == 0)){
+                System.out.println("올바른 전화번호 형식이 아닙니다. 번호를 입력해주세요.");
+                return false;
+            } return true; //입력값 길이가 0이면
+        } else return true;
+    }
+    public boolean isEmail(String email){
+        String emailPattern = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
+        if(!(Pattern.matches(emailPattern, email))){
+            if(!(email.length() ==0)){
+                System.out.println("올바른 이메일 형식이 아닙니다.");
+                return false;
+            } return true;
+        } else return true;
     }
 }

@@ -82,6 +82,6 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return "["+ name +" \t "+ phone +" \t "+ email +" ]";
+        return "[ "+ name +" \t "+ phone +" \t "+ email +" ]";
     }
 }
