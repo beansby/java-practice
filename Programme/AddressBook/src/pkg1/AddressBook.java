@@ -2,9 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class AddressBook {
-    List<Contact> contacts = new ArrayList<>();
+    private List<Contact> contacts = new ArrayList<>();
     int cnt;
-    int keyCode = 0;
 
     //csv file i/o stream
     File file = null;
@@ -16,31 +15,31 @@ public class AddressBook {
     Scanner sc = new Scanner(System.in);
 
 
-
     /**
      * 연락처 저장
      * bufferedWriter -> csv 파일 저장 (true, 이어쓰기)
      * @param filePath
      */
-    public void save(String filePath) throws IOException {
+    public void save(String filePath) throws Exception {
         System.out.println("[연락처 저장]");
         System.out.print("이름 : ");
+
+
         String name = sc.nextLine();
         String phone = null, email = null;
-        if(name == null) {
-            System.out.println("이름을 입력해주세요.");
+        if (name.length() == 0) {
+            throw new PhoneException("입력오류", ERR_PHONE.NOTNULL);
         } else {
             System.out.print("전화번호 : ");
             phone = sc.nextLine();
             //공백일 때 Contact 에 데이터 넣는 것 해결 필요
-            if(phone.length() == 0) phone = " ";
+            if (phone.length() == 0) phone = " ";
             System.out.print("이메일 : ");
             email = sc.nextLine();
-            if(email.length() == 0) email = " ";
-
+            if (email.length() == 0) email = " ";
         }
 
-        String param = name +","+ phone +","+ email;
+        String param = name + "," + phone + "," + email;
 
         try {
             file = new File(filePath);
@@ -53,9 +52,12 @@ public class AddressBook {
             e.printStackTrace();
         }
 
+        System.out.println("연락처가 저장되었습니다.");
+
+
 //        contacts.add(new Contact(name, phone, email));
 //        Collections.sort(contacts);
-        System.out.println("연락처가 저장되었습니다.");
+
     }
 
 
@@ -65,16 +67,17 @@ public class AddressBook {
      * @param filePath
      * @throws IOException
      */
-    public void update(String filePath) throws IOException {
-        int[] idx = findByName(filePath);
-        String name, phone, email;
+    public void update(String filePath) throws Exception {
 
-        for(int i=0; i<cnt; i++){
-            System.out.println("\t 번호 : "+idx[i]+"\t"+contacts.get(idx[i]));
-        }
+        int[] idx = findMenu(filePath);
+        String name, phone, email;
 
         System.out.print("수정할 번호 >> ");
         int num = Integer.parseInt(sc.nextLine());
+        int res = Arrays.binarySearch(idx, 0, cnt, num);
+        if(res < 0){
+            throw new PhoneException("입력오류", ERR_PHONE.NO_LIST);
+        }
 
         while(true){
             System.out.println("[변경할 내용]");
@@ -109,6 +112,8 @@ public class AddressBook {
                 default: break;
             }
         }
+
+
         Collections.sort(contacts);
 
         // Arraylist to csv file
@@ -120,15 +125,15 @@ public class AddressBook {
      * Arraylist 수정 -> 수정된 Arraylist -> csv file save (false, 덮어쓰기)
      * @param filePath
      */
-    public void delete(String filePath){
+    public void delete(String filePath) throws PhoneException {
         int[] idx = findByName(filePath);
-
-        for(int i=0; i<cnt; i++){
-            System.out.println("\t 번호 : "+idx[i]+"\t"+contacts.get(idx[i]));
-        }
 
         System.out.print("삭제할 번호 >> ");
         int num = Integer.parseInt(sc.nextLine());
+        int res = Arrays.binarySearch(idx, 0, cnt, num);
+        if(res < 0){
+            throw new PhoneException("입력오류", ERR_PHONE.NO_LIST);
+        }
 
         contacts.remove(num);
         Collections.sort(contacts);
@@ -138,27 +143,43 @@ public class AddressBook {
         System.out.println("삭제가 완료되었습니다.");
     }
 
+    public int[] findMenu(String filePath) throws PhoneException {
+        RUN: while(true){
+            System.out.println("1. 이름 검색 | 2. 번호 검색 | 0. 종료");
+            int sel = Integer.parseInt(sc.nextLine());
+            if(sel == 0) break;
+            switch (sel){
+                case 1: int[] res = findByName(filePath); break;
+                case 2: int[] res = findByPhone(filePath); break;
+            }
+        }
+        return res;
+    }
+
 
     /**
      * 이름으로 연락처 검색하기
      * @param filePath
      * @return
      */
-    public int[] findByName(String filePath){
+    public int[] findByName(String filePath) throws PhoneException {
         contacts = convertData(filePath);
         int[] idx = new int[10];
         cnt = 0;
 
         System.out.print("이름 검색 >> ");
         String name = sc.nextLine();
+        ArrayList<Contact> res = new ArrayList<>();
 
         for(Contact contact : contacts){
             if(contact.getName().equals(name)){
-//                System.out.print(contact);
-//                System.out.print("\t 번호 : "+contacts.indexOf(contact));
-//                System.out.println("\t"+contact);
                 idx[cnt++] = contacts.indexOf(contact);
+                System.out.println("번호 : "+ contacts.indexOf(contact) +"\t"+ contact);
+                res.add(contact);
             }
+        }
+        if (res.size() == 0){
+            throw new PhoneException("검색오류", ERR_PHONE.NO_RESULT);
         }
         System.out.println();
         return idx;
@@ -167,8 +188,27 @@ public class AddressBook {
     /**
      * 전화번호로 연락처 검색
      */
-    public void findByPhone(){
+    public int[] findByPhone(String filePath) throws PhoneException {
+        contacts = convertData(filePath);
+        int[] idx = new int[10];
+        cnt = 0;
 
+        System.out.print("번호 검색 >> ");
+        String phone = sc.nextLine();
+        ArrayList<Contact> res = new ArrayList<>();
+
+        for(Contact contact : contacts){
+            if(contact.getPhone().equals(phone)){
+                idx[cnt++] = contacts.indexOf(contact);
+                System.out.println("번호 : "+ contacts.indexOf(contact) +"\t"+ contact);
+                res.add(contact);
+            }
+        }
+        if (res.size() == 0){
+            throw new PhoneException("검색오류", ERR_PHONE.NO_RESULT);
+        }
+        System.out.println();
+        return idx;
     }
 
 

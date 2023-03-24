@@ -15,18 +15,6 @@ public class Contact implements Comparable {
     public Contact() {
     }
 
-//    public Contact(String name) {
-//        this.name = name;
-//        this.phone = null;
-//        this.email = null;
-//    }
-//
-//    public Contact(String name, String phone) {
-//        this.name = name;
-//        this.phone = phone;
-//        this.email = null;
-//    }
-
     public Contact(String name, String phone, String email) {
         this.name = name;
         this.phone = phone;
@@ -65,13 +53,24 @@ public class Contact implements Comparable {
     @Override
     public int compareTo(Object o) {
         Contact c = (Contact) o;
-        int num = this.name.compareToIgnoreCase(c.name);
+        int num = name.compareToIgnoreCase(c.name);
 
-        if (num < 0) {
+        if(num == 0){   //번호 정렬
+            if(phone.compareTo(c.phone) < 0){
+                return -1;
+            } else if (phone.compareTo(c.phone) > 0) {
+                return 1;
+            } else {
+                if (email.compareToIgnoreCase(c.email) < 0){
+                    return -1;
+                } else if (email.compareToIgnoreCase(c.email) > 0) {
+                    return 1;
+                } else return 0;
+            }
+        } else if (num < 0){
             return -1;
-        } else if (num > 0){
+        } else
             return 1;
-        } else { return 0; }
     }
 
     @Override
